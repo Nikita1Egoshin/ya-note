@@ -1,9 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LogoutView
 from django.urls import reverse_lazy
 from django.views import generic
 
 from .forms import NoteForm
 from .models import Note
+
+
+class CustomLogoutView(LogoutView):
+    http_method_names = ["get", "post", "options"]
+
+    def get(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class Home(generic.TemplateView):

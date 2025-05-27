@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import include, path
 from django.views.generic import CreateView
 
+from notes.views import CustomLogoutView
+
 urlpatterns = [
     path('', include('notes.urls')),
     path('admin/', admin.site.urls),
@@ -33,4 +35,7 @@ auth_urls = ([
     ),
 ], 'users')
 
-urlpatterns += [path('auth/', include(auth_urls))]
+urlpatterns += [
+    path("auth/logout/", CustomLogoutView.as_view(), name="logout"),
+    path('auth/', include(auth_urls))
+]

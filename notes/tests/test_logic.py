@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from pytils.translit import slugify
 
-from notes.forms import WARNING
+from notes.forms import WARNING, NoteForm
 from notes.models import Note
 
 User = get_user_model()
@@ -108,8 +108,6 @@ class TestNoteEditDelete(TestCase):
 
     def test_not_unique_slug(self):
         self.form_data['slug'] = self.note.slug
-        response = self.author_client.post(URL_TO_ADD,
-                                           data=self.form_data)
-        self.assertFormError(response, 'form', 'slug',
-                             errors=(self.note.slug + WARNING))
+        form = NoteForm(data=self.form_data)
+        self.assertFormError(form, 'slug', errors=[self.note.slug + WARNING])
         self.assertEqual(Note.objects.count(), self.notes_counts + 1)

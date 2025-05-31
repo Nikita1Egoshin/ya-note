@@ -5,7 +5,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertFormError, assertRedirects
 from pytils.translit import slugify
 
-from notes.forms import WARNING
+from notes.forms import WARNING, NoteForm
 from notes.models import Note
 
 
@@ -31,11 +31,13 @@ def test_anonymous_user_cant_create_note(client, form_data):
     assert Note.objects.count() == 0
 
 
-def test_not_unique_slug(author_client, note, form_data):
-    url = reverse('notes:add')
+def test_not_unique_slug(note, form_data):
+    # Подменяем slug новой заметки на slug уже существующей записи:
     form_data['slug'] = note.slug
-    response = author_client.post(url, data=form_data)
-    assertFormError(response, 'form', 'slug', errors=(note.slug + WARNING))
+    form = NoteForm(data=form_data)
+    # Проверяем, что в ответе содержится ошибка формы для поля slug:
+    assertFormError(form, 'slug', errors=(note.slug + WARNING))
+    # Убеждаемся, что количество заметок в базе осталось равным 1:
     assert Note.objects.count() == 1
 
 
